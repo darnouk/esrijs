@@ -14,12 +14,13 @@
       "esri/config", 
       "esri/Map", 
       "esri/views/MapView",
-      "esri/widgets/BasemapGallery",
+      "esri/widgets/BasemapGallery", // for the gallery
       "esri/Basemap", // Include Basemap module
       "esri/layers/OpenStreetMapLayer", // Include OpenStreetMapLayer module
       "esri/layers/ImageryLayer", // Include ImageryLayer module
-      "esri/layers/MapImageLayer" // Include MapImageLayer module
-    ], function(esriConfig, Map, MapView, BasemapGallery, Basemap, OpenStreetMapLayer, ImageryLayer, MapImageLayer) {
+      "esri/layers/MapImageLayer", // Include MapImageLayer module
+      "esri/widgets/Locate" // For the locate widget/button
+    ], function(esriConfig, Map, MapView, BasemapGallery, Basemap, OpenStreetMapLayer, ImageryLayer, MapImageLayer, Locate) {
       esriConfig.apiKey = "AAPK45a1a79d80324d6b84cfcefc5d245da5oW9bwMPWeWTNN2UnfIZ1nUICUQeXC3I1d69a9PhL0bqhQYehrob33UfG1Rj4q3fq";
       
       const map = new Map({
@@ -34,23 +35,13 @@
       const imageryBasemap = Basemap.fromId("satellite");
       const nationalGeographicBasemap = Basemap.fromId("national-geographic");
       const osmBasemap= Basemap.fromId("osm");
+      const streetsDarkBasemap = Basemap.fromId("streets-night-vector");
       const navigationBasemap = Basemap.fromId("streets-navigation-vector");
       const imageryHybridBasemap = Basemap.fromId("hybrid");
       const streetsBasemap = Basemap.fromId("streets");
       const topographicBasemap = Basemap.fromId("topo");
-      // const navigationBasemap = new Basemap({
-      //   baseLayers: [new MapImageLayer({ url: "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer" })],
-      //   title: "Navigation"
-      // });
 
-      // Include the original National Geographic basemap in the gallery
-      /*const nationalGeographicBasemap = new Basemap({
-        baseLayers: [new ImageryLayer({
-          url: "https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer"
-        })],
-        title: "National Geographic"
-      });*/
-
+      // Initialize the view first
       const view = new MapView({
         container: "viewDiv",
         map: map,
@@ -58,11 +49,23 @@
         zoom: 10
       });
 
-      let basemapGallery = new BasemapGallery({
-        view: view,
-        source: [nationalGeographicBasemap, osmBasemap, imageryBasemap, imageryHybridBasemap, streetsBasemap, topographicBasemap, navigationBasemap]
+      // Then create the locate button and add it to the view
+      const locateBtn = new Locate({
+        view: view
       });
 
+      // Add the locate widget to the top left corner of the view
+      view.ui.add(locateBtn, {
+        position: "top-left"
+      });
+
+      // Now, create the basemap gallery
+      let basemapGallery = new BasemapGallery({
+        view: view,
+        source: [navigationBasemap, nationalGeographicBasemap, streetsDarkBasemap, osmBasemap, imageryBasemap, imageryHybridBasemap, streetsBasemap, topographicBasemap]
+      });
+
+      // Add the basemap gallery to the view
       view.ui.add(basemapGallery, {
         position: "top-right"
       });
