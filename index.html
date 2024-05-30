@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>LIVE SERVER MAP</title>
+  <title>GEOG 574 Lab 1</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="A simple map app" />
   <!-- Calls for the ArcGIS API's CSS file and JS library. -->
-  <link rel="stylesheet" href="https://js.arcgis.com/4.25/esri/themes/light/main.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/4.25/esri/themes/dark/main.css">
   <script src="https://js.arcgis.com/4.25/"></script>
-  <!-- Adding the modules needed for a full screen map app.-->
+  <!--  These are the models I need for a full screen map app.
+        basica-->
   <script>
     require([
       "esri/config", 
       "esri/Map", 
       "esri/views/MapView",
-      "esri/widgets/BasemapGallery", // for the gallery
-      "esri/Basemap", // Include Basemap module
+      "esri/widgets/BasemapGallery", // for the basemap gallery
+      "esri/Basemap", // Include the Basemap module
       "esri/layers/OpenStreetMapLayer", // Include OpenStreetMapLayer module
       "esri/layers/ImageryLayer", // Include ImageryLayer module
       "esri/layers/MapImageLayer", // Include MapImageLayer module
-      "esri/widgets/Locate" // For the locate widget/button
-    ], function(esriConfig, Map, MapView, BasemapGallery, Basemap, OpenStreetMapLayer, ImageryLayer, MapImageLayer, Locate) {
+      "esri/widgets/Locate", // For the locate widget/button
+      "esri/widgets/Search" // for the search widget/bar
+    ], function(esriConfig, Map, MapView, BasemapGallery, Basemap, OpenStreetMapLayer, ImageryLayer, MapImageLayer, Locate, Search) {
       esriConfig.apiKey = "AAPK45a1a79d80324d6b84cfcefc5d245da5oW9bwMPWeWTNN2UnfIZ1nUICUQeXC3I1d69a9PhL0bqhQYehrob33UfG1Rj4q3fq";
       
       const map = new Map({
@@ -28,20 +30,15 @@
       });
 
       // Define additional basemaps
-      // const osmBasemap = new Basemap({
-      //   baseLayers: [new OpenStreetMapLayer()],
-      //   title: "OpenStreetMap"
-      // });
       const imageryBasemap = Basemap.fromId("satellite");
       const nationalGeographicBasemap = Basemap.fromId("national-geographic");
-      const osmBasemap= Basemap.fromId("osm");
+      const osmBasemap = Basemap.fromId("osm");
       const streetsDarkBasemap = Basemap.fromId("streets-night-vector");
       const navigationBasemap = Basemap.fromId("streets-navigation-vector");
       const imageryHybridBasemap = Basemap.fromId("hybrid");
       const streetsBasemap = Basemap.fromId("streets");
       const topographicBasemap = Basemap.fromId("topo");
 
-      // Initialize the view first
       const view = new MapView({
         container: "viewDiv",
         map: map,
@@ -49,23 +46,31 @@
         zoom: 10
       });
 
-      // Then create the locate button and add it to the view
       const locateBtn = new Locate({
         view: view
       });
 
       // Add the locate widget to the top left corner of the view
       view.ui.add(locateBtn, {
-        position: "top-left"
+        position: "top-left",
+        index: 1 // Ensures it is below the search widget
       });
 
-      // Now, create the basemap gallery
+      const searchWidget = new Search({
+        view: view
+      });
+
+      // Add the search widget to the top left corner of the view
+      view.ui.add(searchWidget, {
+        position: "top-left",
+        index: 0 // Ensures it is above the locate button
+      });
+
       let basemapGallery = new BasemapGallery({
         view: view,
         source: [navigationBasemap, nationalGeographicBasemap, streetsDarkBasemap, osmBasemap, imageryBasemap, imageryHybridBasemap, streetsBasemap, topographicBasemap]
       });
 
-      // Add the basemap gallery to the view
       view.ui.add(basemapGallery, {
         position: "top-right"
       });
